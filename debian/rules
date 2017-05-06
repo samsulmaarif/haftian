@@ -1,6 +1,9 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
+#include /usr/share/cdbs/1/rules/debhelper.mk
 
-DEB_DH_STRIP_ARGS := --dbg-package=haftian
+binary-install/haftian::
+	mkdir -p debian/$(cdbs_curpkg)/tmp/usr/local/share/haftian/
+	mkdir -p debian/$(cdbs_curpkg)/tmp/usr/local/share/doc/haftian/
+	cp data.zip debian/$(cdbs_curpkg)/tmp/usr/local/share/haftian/
+	cp README.md debian/$(cdbs_curpkg)/tmp/usr/local/share/doc/haftian/
