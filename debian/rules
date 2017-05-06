@@ -1,1 +1,60 @@
+#!/usr/bin/make -f
 
+data=$(CURDIR)/data.zip
+script=$(CURDIR)/haftian
+readme=$(CURDIR)/README.md
+
+DEST1=$(CURDIR)/debian/haftian/usr/local/bin/
+DEST2=$(CURDIR)/debian/haftian/usr/local/share/haftian/
+DEST3=$(CURDIR)/debian/haftian/usr/local/share/doc/haftian/
+
+build: build-stamp
+
+build-stamp: 
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	dh_clean
+
+
+install: build clean $(data) $(script) $(readme)
+	dh_testdir
+	dh_testroot
+	dh_prep
+	dh_installdirs
+
+
+	mkdir -m 755 -p $(DEST1)
+	mkdir -m 755 -p $(DEST2)
+	mkdir -m 755 -p $(DEST3)
+
+
+	install -m 666 $(data) $(DEST2) 
+	install -m 777 $(script) $(DEST1)
+	install -m 666 $(readme) $(DEST3)
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_installexamples
+	dh_installman
+	dh_link
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+# We have nothing to do by default.
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

@@ -1,6 +1,6 @@
 # H. Aftian
 
-A utility to create a BlankOn UEFI bootable USB.
+An utility to create a BlankOn UEFI bootable USB.
 
 ## Steps
 
@@ -44,3 +44,27 @@ Number  Start   End     Size    File system  Name  Flags
 # sudo mkfs.vfat -F32 /dev/your/usbdevice1    # <---- Don't forget to put partition number, if your usb disk is in /dev/sdb then this should be mkfs.vfat -F32 /dev/sdb1
 # sudo mount /dev/your/usbdevice1 /mnt
 ```
+
+# Debianization
+
+To build a debian package, install the following package 
+
+```
+sudo apt-get install git-core devscripts build-essential fakeroot \
+	debhelper gnupg pbuilder dh-make dpkg-dev ubuntu-dev-tools
+```
+
+Clone this repository
+
+```
+git clone https://github.com/samsulmaarif/haftian.git haftian-1.0
+```
+
+and then build with
+
+```
+cd haftian-1.0
+dpkg-buildpackage -rfakeroot
+```
+
+the `haftian_1.0-1blankon0_all.deb` package will be placed in parent directory.

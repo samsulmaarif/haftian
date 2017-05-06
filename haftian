@@ -1,23 +1,70 @@
 #!/bin/bash
+# Author :
+#   2016 Mohammad Anwari <mdamt@di.blankon.in>
+#   2017 Samsul Ma'arif <hay@samsul.web.id>
+#  
+#   An utility to create a BlankOn UEFI bootable USB.
+#
+#   Hompage : https://github.com/samsulmaarif/haftian
+
 
 set -e
+
+clear
+
+warning() {
+echo "
+########################################################
+#     W      A      R      N      I      N      G      #
+########################################################
+
+This program comes with absolutely NO WARRANTY.
+Please USE AT YOUR OWN RISK!!
+
+"
+} 2>/dev/null
+warning
 
 ISO=$1
 TARGET=$2
 TMPDIR=/tmp
 
-if [ ! -d $TARGET ];then
+usage() {
+echo "
+   H. Aftian Version 1.0-1
+
+   Usage: $0 [ ISOFILE ] [ MOUNTPOINTUSB ]
+      
+      where :
+
+      ISOFILE		is your iso file
+      MOUNTPOINTUSB	is a path where you mount your USB Disk
+
+"
+} 2>/dev/null
+
+if [ -z $1 ]; then 
+  usage
+  exit
+fi
+
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root"
+  exit
+fi
+
+if [ ! -d $TARGET ]; then
   echo "$TARGET is not a directory"
   exit
 fi
 
-if [ ! -f $ISO ];then
+if [ ! -f $ISO ]; then
   echo "$ISO is not a file"
   exit
 fi
 
 
-DATAZIP=`pwd`/data.zip
+DATAZIP=/usr/local/share/haftian/data.zip
 if [ ! -f $DATAZIP ];then
   echo "Haftian boot data files are not found"
   exit
@@ -26,17 +73,22 @@ fi
 MOUNTED_ISO=$TMPDIR/iso
 
 mkdir -p $MOUNTED_ISO $TARGET
+echo "Creating directory $MOUNTED_ISO and $TARGET"
 mount -o loop $ISO $MOUNTED_ISO
+echo "Mounting $ISO to $MOUNTED_ISO"
 
 rsync -aL $MOUNTED_ISO/* $TARGET
+echo "Copying files..."
 cp -a $MOUNTED_ISO/.disk $TARGET
 
 pushd $TARGET
 unzip $DATAZIP
+echo "Extracting files..."
 popd
 
 umount $MOUNTED_ISO
 umount $TARGET
 rmdir $MOUNTED_ISO
 
+echo "DONE"
 

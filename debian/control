@@ -9,7 +9,7 @@ Homepage: https://github.com/samsulmaarif/haftian
 Package: haftian
 Architecture: all
 Depends: ${misc:Depends}
-Description: A utility to create a BlankOn UEFI bootable USB.
+Description: An utility to create a BlankOn UEFI bootable USB.
  Creating BlankOn Linux USB installer with UEFI support has never 
  been easier. 
  .
