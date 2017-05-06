@@ -1,20 +1,18 @@
-Package: haftian
-Version: 1.0-1
-Section: admin
 Source: haftian
+Section: admin
 Priority: optional
-Architecture: all
 Maintainer: Samsul Ma'arif <hay@samsul.web.id>
+Build-Depends: debhelper (>=9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/samsulmaarif/haftian
 
 Package: haftian
-Section: admin
-Priority: optional
 Architecture: all
-Depends: unzip, rsync
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: A utility to create a BlankOn UEFI bootable USB.
- Creating BlankOn Linux USB installer with UEFI support has never   
- been easier.   
+ Creating BlankOn Linux USB installer with UEFI support has never 
+ been easier. 
  .
- This tool is a bash script primarly created by Mohammad Anwari   
+ This tool is a bash script primarly created by Mohammad Anwari 
  a.k.a mdamt a Software Engineer from TNISiber.id and a former 
  BlankOn Developer.
