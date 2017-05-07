@@ -1,0 +1,407 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..82e96bd
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1 @@
++debian/haftian/*
+diff --git a/README.md b/README.md
+index e2880b5..a9317c7 100644
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,6 @@
+ # H. Aftian
+ 
+-A utility to create a BlankOn UEFI bootable USB.
++An utility to create a BlankOn UEFI bootable USB.
+ 
+ ## Steps
+ 
+@@ -44,3 +44,27 @@ Number  Start   End     Size    File system  Name  Flags
+ # sudo mkfs.vfat -F32 /dev/your/usbdevice1    # <---- Don't forget to put partition number, if your usb disk is in /dev/sdb then this should be mkfs.vfat -F32 /dev/sdb1
+ # sudo mount /dev/your/usbdevice1 /mnt
+ ```
++
++# Debianization
++
++To build a debian package, install the following package 
++
++```
++sudo apt-get install git-core devscripts build-essential fakeroot \
++	debhelper gnupg pbuilder dh-make dpkg-dev ubuntu-dev-tools
++```
++
++Clone this repository
++
++```
++git clone https://github.com/samsulmaarif/haftian.git haftian-1.0
++```
++
++and then build with
++
++```
++cd haftian-1.0
++dpkg-buildpackage -rfakeroot
++```
++
++the `haftian_1.0-1blankon0_all.deb` package will be placed in parent directory.
+diff --git a/debian/README b/debian/README
+new file mode 100644
+index 0000000..613a379
+--- /dev/null
++++ b/debian/README
+@@ -0,0 +1,6 @@
++The Debian Package haftian
++----------------------------
++
++Comments regarding the Package
++
++ -- Samsul Ma'arif <hay@samsul.web.id>  Sun, 07 May 2017 00:03:24 +0700
+diff --git a/debian/README.source b/debian/README.source
+new file mode 100644
+index 0000000..e2880b5
+--- /dev/null
++++ b/debian/README.source
+@@ -0,0 +1,46 @@
++# H. Aftian
++
++A utility to create a BlankOn UEFI bootable USB.
++
++## Steps
++
++0. Get haftian
++1. Prepare your BlankOn .ISO
++2. Prepare your USB disk (this will be handled later) as GPT with 1 partition, formatted with FAT32 and mount it to somewhere
++3. Run haftian:
++
++```
++cd /where/you/put/haftian/
++sudo ./haftian /where/is/your.iso.file /where/you/mount/your/usb.disk
++```
++
++4. Reboot and try
++
++# LICENSE
++
++haftian is in public domain but it contains files from GRUB which are licensed in GPL3.
++
++
++# Tips
++
++This is how I prepare my USB disk. Note that `#` is Linux prompt and `(parted)` is GNU Parted prompt.
++
++```
++# sudo parted /dev/your/usb/device
++
++(parted) mktable gpt
++(parted) mkpart efi fat32 1 -1
++(parted) toggle 1 boot
++(parted) p 
++Model: SanDisk Ultra (scsi)
++Disk /dev/sdb: 8004MB
++Sector size (logical/physical): 512B/512B
++Partition Table: gpt
++Disk Flags: 
++
++Number  Start   End     Size    File system  Name  Flags
++ 1      1049kB  8004MB  8003MB  fat32        efi   boot, esp
++(parted) quit
++# sudo mkfs.vfat -F32 /dev/your/usbdevice1    # <---- Don't forget to put partition number, if your usb disk is in /dev/sdb then this should be mkfs.vfat -F32 /dev/sdb1
++# sudo mount /dev/your/usbdevice1 /mnt
++```
+diff --git a/debian/changelog b/debian/changelog
+new file mode 100644
+index 0000000..50bbc9a
+--- /dev/null
++++ b/debian/changelog
+@@ -0,0 +1,5 @@
++haftian (1.0-1blankon0) unstable; urgency=medium
++
++  * Initial Release.
++
++ -- Samsul Ma'arif <hay@samsul.web.id>  Sun, 07 May 2017 00:03:24 +0700
+diff --git a/debian/compat b/debian/compat
+new file mode 100644
+index 0000000..ec63514
+--- /dev/null
++++ b/debian/compat
+@@ -0,0 +1 @@
++9
+diff --git a/debian/control b/debian/control
+new file mode 100644
+index 0000000..fe20775
+--- /dev/null
++++ b/debian/control
+@@ -0,0 +1,18 @@
++Source: haftian
++Section: admin
++Priority: optional
++Maintainer: Samsul Ma'arif <hay@samsul.web.id>
++Build-Depends: debhelper (>=9)
++Standards-Version: 3.9.6
++Homepage: https://github.com/samsulmaarif/haftian
++
++Package: haftian
++Architecture: all
++Depends: ${misc:Depends}
++Description: An utility to create a BlankOn UEFI bootable USB.
++ Creating BlankOn Linux USB installer with UEFI support has never 
++ been easier. 
++ .
++ This tool is a bash script primarly created by Mohammad Anwari 
++ a.k.a mdamt a Software Engineer from TNISiber.id and a former 
++ BlankOn Developer.
+diff --git a/debian/copyright b/debian/copyright
+new file mode 100644
+index 0000000..a28d873
+--- /dev/null
++++ b/debian/copyright
+@@ -0,0 +1,29 @@
++Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
++Upstream-Name: haftian
++Source: https://github.com/samsulmaarif/haftian
++
++Files: *
++Copyright: 2016 Mohamad Anwari <mdamt@di.blankon.in>
++           2017 Samsul Ma'arif <hay@samsul.web.id>
++License: GPL-3.0+
++
++Files: debian/*
++Copyright: 2017 Samsul Ma'arif <hay@samsul.web.id>
++License: GPL-3.0+
++
++License: GPL-3.0+
++ This program is free software: you can redistribute it and/or modify
++ it under the terms of the GNU General Public License as published by
++ the Free Software Foundation, either version 3 of the License, or
++ (at your option) any later version.
++ .
++ This package is distributed in the hope that it will be useful,
++ but WITHOUT ANY WARRANTY; without even the implied warranty of
++ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ GNU General Public License for more details.
++ .
++ You should have received a copy of the GNU General Public License
++ along with this program. If not, see <https://www.gnu.org/licenses/>.
++ .
++ On Debian systems, the complete text of the GNU General
++ Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
+diff --git a/debian/files b/debian/files
+new file mode 100644
+index 0000000..0253576
+--- /dev/null
++++ b/debian/files
+@@ -0,0 +1 @@
++haftian_1.0-1blankon0_all.deb admin optional
+diff --git a/debian/haftian-docs.docs b/debian/haftian-docs.docs
+new file mode 100644
+index 0000000..760db9a
+--- /dev/null
++++ b/debian/haftian-docs.docs
+@@ -0,0 +1,2 @@
++README
++README.source
+diff --git a/debian/haftian.debhelper.log b/debian/haftian.debhelper.log
+new file mode 100644
+index 0000000..7439dfb
+--- /dev/null
++++ b/debian/haftian.debhelper.log
+@@ -0,0 +1,14 @@
++dh_prep
++dh_installdirs
++dh_installchangelogs
++dh_installdocs
++dh_installexamples
++dh_installman
++dh_link
++dh_compress
++dh_fixperms
++dh_installdeb
++dh_gencontrol
++dh_md5sums
++dh_builddeb
++dh_builddeb
+diff --git a/debian/haftian.substvars b/debian/haftian.substvars
+new file mode 100644
+index 0000000..978fc8b
+--- /dev/null
++++ b/debian/haftian.substvars
+@@ -0,0 +1,2 @@
++misc:Depends=
++misc:Pre-Depends=
+diff --git a/debian/rules b/debian/rules
+new file mode 100755
+index 0000000..e815358
+--- /dev/null
++++ b/debian/rules
+@@ -0,0 +1,60 @@
++#!/usr/bin/make -f
++
++data=$(CURDIR)/data.zip
++script=$(CURDIR)/haftian
++readme=$(CURDIR)/README.md
++
++DEST1=$(CURDIR)/debian/haftian/usr/local/bin/
++DEST2=$(CURDIR)/debian/haftian/usr/local/share/haftian/
++DEST3=$(CURDIR)/debian/haftian/usr/local/share/doc/haftian/
++
++build: build-stamp
++
++build-stamp: 
++	dh_testdir
++	touch build-stamp
++
++clean:
++	dh_testdir
++	dh_testroot
++	rm -f build-stamp
++	dh_clean
++
++
++install: build clean $(data) $(script) $(readme)
++	dh_testdir
++	dh_testroot
++	dh_prep
++	dh_installdirs
++
++
++	mkdir -m 755 -p $(DEST1)
++	mkdir -m 755 -p $(DEST2)
++	mkdir -m 755 -p $(DEST3)
++
++
++	install -m 666 $(data) $(DEST2) 
++	install -m 777 $(script) $(DEST1)
++	install -m 666 $(readme) $(DEST3)
++
++binary-indep: build install
++	dh_testdir
++	dh_testroot
++	dh_installchangelogs
++	dh_installdocs
++	dh_installexamples
++	dh_installman
++	dh_link
++	dh_compress
++	dh_fixperms
++	dh_installdeb
++	dh_gencontrol
++	dh_md5sums
++	dh_builddeb
++
++# Build architecture-dependent files here.
++binary-arch: build install
++# We have nothing to do by default.
++
++binary: binary-indep binary-arch
++.PHONY: build clean binary-indep binary-arch binary install
+diff --git a/debian/source/format b/debian/source/format
+new file mode 100644
+index 0000000..89ae9db
+--- /dev/null
++++ b/debian/source/format
+@@ -0,0 +1 @@
++3.0 (native)
+diff --git a/haftian b/haftian
+old mode 100755
+new mode 100644
+index 890e199..33f3061
+--- a/haftian
++++ b/haftian
+@@ -1,23 +1,70 @@
+ #!/bin/bash
++# Author :
++#   2016 Mohammad Anwari <mdamt@di.blankon.in>
++#   2017 Samsul Ma'arif <hay@samsul.web.id>
++#  
++#   An utility to create a BlankOn UEFI bootable USB.
++#
++#   Hompage : https://github.com/samsulmaarif/haftian
++
+ 
+ set -e
+ 
++clear
++
++warning() {
++echo "
++########################################################
++#     W      A      R      N      I      N      G      #
++########################################################
++
++This program comes with absolutely NO WARRANTY.
++Please USE AT YOUR OWN RISK!!
++
++"
++} 2>/dev/null
++warning
++
+ ISO=$1
+ TARGET=$2
+ TMPDIR=/tmp
+ 
+-if [ ! -d $TARGET ];then
++usage() {
++echo "
++   H. Aftian Version 1.0-1
++
++   Usage: $0 [ ISOFILE ] [ MOUNTPOINTUSB ]
++      
++      where :
++
++      ISOFILE		is your iso file
++      MOUNTPOINTUSB	is a path where you mount your USB Disk
++
++"
++} 2>/dev/null
++
++if [ -z $1 ]; then 
++  usage
++  exit
++fi
++
++if [ "$EUID" -ne 0 ]; then
++  echo "Please run as root"
++  exit
++fi
++
++if [ ! -d $TARGET ]; then
+   echo "$TARGET is not a directory"
+   exit
+ fi
+ 
+-if [ ! -f $ISO ];then
++if [ ! -f $ISO ]; then
+   echo "$ISO is not a file"
+   exit
+ fi
+ 
+ 
+-DATAZIP=`pwd`/data.zip
++DATAZIP=/usr/local/share/haftian/data.zip
+ if [ ! -f $DATAZIP ];then
+   echo "Haftian boot data files are not found"
+   exit
+@@ -26,17 +73,22 @@ fi
+ MOUNTED_ISO=$TMPDIR/iso
+ 
+ mkdir -p $MOUNTED_ISO $TARGET
++echo "Creating directory $MOUNTED_ISO and $TARGET"
+ mount -o loop $ISO $MOUNTED_ISO
++echo "Mounting $ISO to $MOUNTED_ISO"
+ 
+ rsync -aL $MOUNTED_ISO/* $TARGET
++echo "Copying files..."
+ cp -a $MOUNTED_ISO/.disk $TARGET
+ 
+ pushd $TARGET
+ unzip $DATAZIP
++echo "Extracting files..."
+ popd
+ 
+ umount $MOUNTED_ISO
+ umount $TARGET
+ rmdir $MOUNTED_ISO
+ 
++echo "DONE"
+ 
